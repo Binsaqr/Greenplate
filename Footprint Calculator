@@ -1,0 +1,19 @@
+from odoo import models, fields, api
+
+class Donation(models.Model):
+    _name = 'greenplate.donation'
+    _description = 'Food Donation with CO₂ Tracking'
+
+    name = fields.Char(string="Food Item", required=True)
+    weight_kg = fields.Float(string="Weight (kg)", required=True)
+    expiry_date = fields.Date(string="Expiry Date", required=True)
+    donor_id = fields.Many2one('res.users', string="Donor", default=lambda self: self.env.user)
+    donation_date = fields.Date(string="Donation Date", default=fields.Date.today)
+
+    co2_saved = fields.Float(string="CO₂ Saved (kg)", compute='_compute_co2_saved', store=True)
+
+    @api.depends('weight_kg')
+    def _compute_co2_saved(self):
+        for record in self:
+            # Each 1kg of food saved = 1.8kg CO₂ saved (adjustable constant)
+            record.co2_saved = record.weight_kg * 1.8
