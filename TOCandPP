@@ -1,0 +1,14 @@
+from odoo import models, fields
+
+class PrivacyPolicyAcceptance(models.Model):
+    _name = 'greenplate.policy.acceptance'
+    _description = 'User Acceptance of Privacy Policy and Terms'
+    _rec_name = 'user_id'
+
+    user_id = fields.Many2one('res.users', string='User', required=True, ondelete='cascade')
+    accepted_on = fields.Datetime(string='Accepted On', default=fields.Datetime.now)
+    policy_version = fields.Char(string='Policy Version', default='v1.0')
+
+    _sql_constraints = [
+        ('user_unique_acceptance', 'unique(user_id)', 'Each user can only accept the policy once.')
+    ]
